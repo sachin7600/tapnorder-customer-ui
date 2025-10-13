@@ -1,0 +1,49 @@
+{
+  "theme_color": "#000000",
+  "background_color": "#000000",
+  "display": "standalone",
+  "orientation": "portrait",
+  "dir": "auto",
+  "lang": "en-GB",
+  "name": "TapNOrder",
+  "short_name": "TapNOrder",
+  "start_url": "/",
+  "id": "/"
+//  "icons": [
+//    {
+//      "purpose": "maskable",
+//      "sizes": "512x512",
+//      "src": "icon_512.png",
+//      "type": "image/png"
+//    },
+//    {
+//      "purpose": "any",
+//      "sizes": "512x512",
+//      "src": "icon_512.png",
+//      "type": "image/png"
+//    },
+//    {
+//      "src": "icon_192.png",
+//      "type": "image/png",
+//      "sizes": "192x192"
+//    },
+//    {
+//      "src": "icon_256.png",
+//      "type": "image/png",
+//      "sizes": "256x256"
+//    },
+//    {
+//      "src": "icon_512.png",
+//      "type": "image/png",
+//      "sizes": "512x512"
+//    }
+//  ],
+//  "screenshots": [
+//    {
+//      "src": "screenshot_1920.png",
+//      "sizes": "1080x1920",
+//      "type": "image/png",
+//      "form_factor": "narrow"
+//    }
+//  ]
+}
