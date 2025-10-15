@@ -5,7 +5,7 @@ import {ArrowLeft, Clock4, MapPin, MoveLeft, UserRound} from "lucide-react";
 import Image from "next/image";
 import {useGetOutletDetailsByIdQuery} from "@/lib/api/MenuItemApi";
 import {createImageBlob} from "@/lib/createImageBlob";
-import {useSearchParams} from "next/navigation";
+import {useRouter, useSearchParams} from "next/navigation";
 
 interface Props {
     title?: string;
@@ -13,6 +13,7 @@ interface Props {
 
 function TopBar({title = ''}: Props) {
     const searchParams = useSearchParams();
+    const router = useRouter();
     const outletId = searchParams.get("outletId");
     const tableId = searchParams.get("tableId");
     const {data, isLoading} = useGetOutletDetailsByIdQuery({outletId, tableId});
@@ -22,7 +23,7 @@ function TopBar({title = ''}: Props) {
             {
                 title ? (
                     <div className={'flex items-center justify-center gap-2'}>
-                        <span className={'text-foreground'}>
+                        <span className={'text-foreground'} onClick={() => router.back()}>
                             <ArrowLeft size={28}/>
                         </span>
                         <span className={'text-xl font-bold pb-0.5 text-foreground'}>{title}</span>
