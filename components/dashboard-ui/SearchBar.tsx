@@ -12,18 +12,18 @@ import {useGetCategoryWithMenuQuery} from "@/lib/api/MenuItemApi";
 import Loader from "@/components/common-ui/Loader";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "@/lib/redux/store";
-import {setFoodType, setSelectedCategory} from "@/lib/redux/slices/menuCategorySlice";
+import {setFoodType, setSearchText, setSelectedCategory} from "@/lib/redux/slices/menuCategorySlice";
 
 type Checked = DropdownMenuCheckboxItemProps["checked"]
 
 const filter = ['Veg', 'Non-Veg', 'Both'];
 
-function SearchBar({setSearchText, searchText}) {
-  const {foodType, categoryNameList, selectedCategory} = useSelector((state: RootState)=> state.menuCategory);
+function SearchBar() {
+  const {foodType, categoryNameList, selectedCategory, searchText} = useSelector((state: RootState)=> state.menuCategory);
   const dispatch = useDispatch();
 
   const handleChange = (e: string)=> {
-    setSearchText(e)
+    dispatch(setSearchText(e))
   }
 
   return (
@@ -65,15 +65,15 @@ function SearchBar({setSearchText, searchText}) {
           </DropdownMenu>
         </div>
       </div>
-      <div className={'flex px-2 mt-3 gap-2 items-center justify-between overflow-y-scroll scrollbar-hide'}>
+      <div className={'flex px-2 mt-3 gap-10 items-center overflow-y-scroll scrollbar-hide'}>
         {
           categoryNameList?.map((item: any) => (
-            <div key={item?.categoryId} className={'flex items-center justify-center flex-col'} onClick={()=> dispatch(setSelectedCategory(item?.categoryId))}>
-              <span className={`bg-card rounded-full h-12 w-10 flex items-center justify-center font-bold ${selectedCategory === item?.categoryId ? "bg-primary" : ""}`}>
+              <div key={item?.categoryId} className={'flex items-center justify-center flex-col'} onClick={()=> dispatch(setSelectedCategory(item?.categoryId))}>
+              <span className={`bg-card rounded-full h-13 w-12 flex items-center justify-center font-bold ${selectedCategory === item?.categoryId ? "bg-primary" : ""}`}>
                 <Utensils className={`text-primary h-5 ${selectedCategory === item?.categoryId ? "text-white" : ""}`}/>
               </span>
-              <span className={`font-semibold text-sm`}>{item?.categoryName}</span>
-            </div>
+                <span className={`font-semibold text-sm font-sans-serif`}>{item?.categoryName}</span>
+              </div>
           ))
         }
       </div>

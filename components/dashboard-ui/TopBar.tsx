@@ -6,8 +6,8 @@ import Image from "next/image";
 import {useGetOutletDetailsByIdQuery} from "@/lib/api/MenuItemApi";
 import {createImageBlob} from "@/lib/createImageBlob";
 
-function TopBar() {
-  const { data, isLoading } = useGetOutletDetailsByIdQuery({ outletId: 125, tableId: 383 });
+function TopBar({outletId, tableId}) {
+  const { data, isLoading } = useGetOutletDetailsByIdQuery({ outletId, tableId });
 
   return (
     <div className={'h-24 w-full rounded-b-2xl bg-white shadow-md flex items-center justify-between px-4'}>

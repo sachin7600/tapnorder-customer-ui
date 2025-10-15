@@ -5,6 +5,7 @@ const initialState = {
   categoryNameList: [],
   foodType: 'Both',
   selectedCategory: null,
+  searchText: ''
 }
 
 const menuCategorySlice = createSlice({
@@ -16,16 +17,26 @@ const menuCategorySlice = createSlice({
       state.categoryMenuList = data;
     },
     setSelectedCategory: (state,action) =>{
-      state.selectedCategory = action.payload;
+      const value = state.selectedCategory;
+      if(value !== action.payload) {
+        state.selectedCategory = action.payload;
+      } else if(value) {
+        state.selectedCategory = null;
+      } else {
+        state.selectedCategory = action.payload;
+      }
     },
     setFoodType: (state,action)=> {
       state.foodType = action.payload;
     },
     setCategoryNameData: (state, action) => {
       state.categoryNameList = action.payload;
+    },
+    setSearchText: (state, action) => {
+      state.searchText = action.payload;
     }
   }
 })
 
-export const {setMenuCategoryData, setSelectedCategory, setFoodType, setCategoryNameData} = menuCategorySlice.actions;
+export const {setMenuCategoryData, setSelectedCategory, setFoodType, setCategoryNameData, setSearchText} = menuCategorySlice.actions;
 export default menuCategorySlice.reducer;

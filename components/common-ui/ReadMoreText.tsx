@@ -27,7 +27,7 @@ const ReadMoreText = ({ text, wordLimit = 5 }: Props) => {
             onClick={toggleExpand}
             className="text-primary"
           >
-          {isExpanded ? 'Read Less' : 'Read More'}
+          {isExpanded ? 'Less' : 'More'}
         </span>
         )}
       </p>

@@ -6,31 +6,33 @@ import SearchBar from "@/components/dashboard-ui/SearchBar";
 import MenuAccordion from "@/components/dashboard-ui/MenuAccordion";
 import {useGetCategoryWithMenuQuery} from "@/lib/api/MenuItemApi";
 import {useDispatch} from "react-redux";
-import {setCategoryNameData, setMenuCategoryData, setSelectedCategory} from "@/lib/redux/slices/menuCategorySlice";
+import {setCategoryNameData, setMenuCategoryData} from "@/lib/redux/slices/menuCategorySlice";
 import Loader from "@/components/common-ui/Loader";
+import {useSearchParams} from "next/navigation";
 
 function Page() {
-  const {data: categoryName} = useGetCategoryWithMenuQuery({outletId: 125});
-  const {data: categoryData, isLoading} = useGetCategoryWithMenuQuery({outletId: 125});
-  const [searchText,setSearchText] = useState("");
+  const searchParams = useSearchParams();
+  const outletId = searchParams.get('outletId');
+  const tableId = searchParams.get('tableId');
+  const {data: categoryName} = useGetCategoryWithMenuQuery({outletId});
+  const {data: categoryData, isLoading} = useGetCategoryWithMenuQuery({outletId});
   const dispatch = useDispatch();
 
   useEffect(() => {
     if(categoryData?.length > 0) {
       dispatch(setCategoryNameData(categoryName));
       dispatch(setMenuCategoryData(categoryData))
-      dispatch(setSelectedCategory(categoryName[0]?.categoryId))
     }
   },[categoryData])
 
   return (
-    <div className={'bg-gray-200 min-h-full'}>
+    <div className={'bg-gray-200 min-h-[100vh]'}>
       {
         isLoading ? <Loader/> : (
           <>
-            <TopBar/>
-            <SearchBar setSearchText={setSearchText} searchText={searchText}/>
-            <MenuAccordion searchText={searchText}/>
+            <TopBar outletId={outletId} tableId={tableId}/>
+            <SearchBar />
+            <MenuAccordion />
           </>
         )
       }

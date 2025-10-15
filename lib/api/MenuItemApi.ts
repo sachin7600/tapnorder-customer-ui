@@ -1,10 +1,10 @@
 import { apiService as api } from '@/lib/apiServices';
 
-export const addTagTypes = ['menu_item_list', 'menu_item_details','menu_category_list_all'] as const;
+export const menuItemTags = ['menu_item_list', 'menu_item_details','menu_category_list_all'] as const;
 
 const MenuItemApi = api
   .enhanceEndpoints({
-    addTagTypes
+    addTagTypes: menuItemTags
   })
   .injectEndpoints({
     endpoints: (build) => ({
@@ -105,7 +105,7 @@ const MenuItemApi = api
             return response;
           }
         },
-        invalidatesTags: ['CustomerCart']
+        invalidatesTags: ['menu_item_list']
       }),
     }),
     overrideExisting: false
