@@ -10,7 +10,7 @@ import {Plus, X} from "lucide-react";
 import ReadMoreText from "@/components/common-ui/ReadMoreText";
 import {useAddMenuItemsInCartMutation} from "@/lib/api/MenuItemApi";
 import {createImageBlob} from "@/lib/createImageBlob";
-import CustomDrawer from "@/components/common-ui/CustomDrawer";
+import CustomerDrawer from "@/components/common-ui/CustomerDrawer";
 import {useSelector} from "react-redux";
 import {RootState} from "@/lib/redux/store";
 import {useGetExistingCartIdQuery} from "@/lib/api/CustomerApi";
@@ -325,8 +325,6 @@ function MenuAccordion() {
                 )
             }
 
-            <CustomDrawer open={drawerOpen} setOpen={setDrawerOpen}/>
-
             {
                 getTotalCartCount() > 0 && (
                     <div
@@ -350,6 +348,9 @@ function MenuAccordion() {
                     </div>
                 )
             }
+
+            <CustomerDrawer open={drawerOpen} setOpen={setDrawerOpen}/>
+
         </div>
     );
 }
