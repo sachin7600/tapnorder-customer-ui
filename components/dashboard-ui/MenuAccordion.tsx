@@ -15,7 +15,7 @@ import {useSelector} from "react-redux";
 import {RootState} from "@/lib/redux/store";
 import {useGetExistingCartIdQuery} from "@/lib/api/CustomerApi";
 import {useUser} from "@/components/context/AuthContext";
-import {useSearchParams} from "next/navigation";
+import {useRouter, useSearchParams} from "next/navigation";
 import {toast} from "sonner";
 import CustomButton from "@/components/common-ui/CustomButton";
 
@@ -38,6 +38,7 @@ function MenuAccordion() {
     const searchParams = useSearchParams();
     const outletId = searchParams.get("outletId");
     const tableId = searchParams.get("tableId");
+    const router = useRouter();
 
     useEffect(() => {
         if (cartData?.items) {
@@ -334,7 +335,7 @@ function MenuAccordion() {
                             <CustomButton
                                 count={getTotalCartCount()}
                                 iconSize={32}
-                                onClick={() => console.log("Checkout clicked")}
+                                onClick={() => router.push('/mycart')}
                             />
 
                             <span className={'flex items-center justify-center'}>

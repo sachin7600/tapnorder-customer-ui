@@ -30,7 +30,7 @@ function Page() {
       {
         isLoading ? <Loader/> : (
           <>
-            <TopBar outletId={outletId} tableId={tableId}/>
+            <TopBar/>
             <SearchBar />
             <MenuAccordion />
           </>
