@@ -1,35 +1,37 @@
-'use client'
-import { createContext, useState, useEffect, useContext } from 'react';
+'use client';
+import {createContext, useState, useEffect, useContext} from 'react';
 import {setAuthToken} from "@/lib/apiServices";
 
 const AuthContext = createContext(null);
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+export const AuthProvider = ({children}) => {
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const storedUser: string | null = localStorage.getItem("customerLogin");
-    const token: string | null = localStorage.getItem("authToken");
-    if (storedUser) {
-      setAuthToken(token)
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false);
-  }, []);
+    useEffect(() => {
+        const storedUser = localStorage.getItem("customerLogin");
+        const token = localStorage.getItem("authToken");
 
-  const value = {
-    user,
-    loading,
-  };
+        if (storedUser && token) {
+            setAuthToken(token);
+            setUser(JSON.parse(storedUser));
+        }
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+        setLoading(false);
+    }, []);
+
+    const value = {
+        user,
+        loading,
+    };
+
+    return (
+        <AuthContext.Provider value={value}>
+            {children}
+        </AuthContext.Provider>
+    );
 };
 
 export const useUser = () => {
-  return useContext(AuthContext);
+    return useContext(AuthContext);
 };
