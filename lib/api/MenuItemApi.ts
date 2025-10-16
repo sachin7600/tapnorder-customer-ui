@@ -105,7 +105,6 @@ const MenuItemApi = api
             return response;
           }
         },
-        invalidatesTags: ['menu_item_list']
       }),
     }),
     overrideExisting: false

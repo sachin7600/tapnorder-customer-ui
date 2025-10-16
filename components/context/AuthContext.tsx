@@ -14,7 +14,6 @@ export const AuthProvider = ({children}) => {
     const searchParams = useSearchParams();
     const outletId = searchParams.get("outletId");
 
-    // Check local storage on mount
     useEffect(() => {
         const storedUser = localStorage.getItem("customerLogin");
         const token = localStorage.getItem("authToken");
@@ -27,7 +26,6 @@ export const AuthProvider = ({children}) => {
         setLoading(false);
     }, []);
 
-    // Login function
     const login = async (values) => {
         try {
             const payload = {...values, outletId};
@@ -49,11 +47,20 @@ export const AuthProvider = ({children}) => {
         }
     };
 
-    const value = {
-        user,
-        loading,
-        login,
-    };
+  const logout = () => {
+    setUser(null);
+    setAuthToken(null);
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("customerLogin");
+    toast.success("Logged out successfully", {position: "top-center"});
+  };
+
+  const value = {
+    user,
+    loading,
+    login,
+    logout,
+  };
 
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -2,6 +2,7 @@
 import React from "react";
 import {Button} from "@/components/ui/button";
 import {MoveRight, ShoppingCart} from "lucide-react";
+import Image from "next/image";
 
 interface CustomButtonProps {
     count?: number;
@@ -9,6 +10,8 @@ interface CustomButtonProps {
     onClick?: () => void;
     iconSize?: number;
     disabled?: boolean;
+    classNames?: string;
+    icon?: any
 }
 
 const CustomButton: React.FC<CustomButtonProps> = ({
@@ -17,24 +20,42 @@ const CustomButton: React.FC<CustomButtonProps> = ({
                                                        onClick,
                                                        iconSize = 24,
                                                        disabled = false,
+                                                      classNames="",
+                                                        icon
                                                    }) => {
     return (
         <Button
             onClick={onClick}
             disabled={disabled}
-            className="w-full py-6 rounded-md flex justify-between items-center px-2 bg-primary transition-all"
+            className={`w-full py-6 rounded-md flex justify-between items-center px-2 bg-primary transition-all ${classNames}`}
         >
-            <span
-                className="text-sm font-semibold text-primary bg-white rounded-lg w-20 py-2 text-center flex justify-around items-center">
+          {
+            icon ? (
+              <span
+                className="text-sm font-semibold text-primary bg-white rounded-lg w-12 py-2 flex justify-center itmes-center"
+              >
+                <span>
+                    {icon}
+                </span>
+              </span>
+
+            ) : (
+              <span
+                className="text-sm font-semibold text-primary bg-white rounded-lg w-20 py-2 text-center flex justify-around items-center"
+              >
                 <ShoppingCart size={5}/>
                 <span>
                     {count} {count > 1 ? "Items" : "Item"}
                 </span>
               </span>
+            )
+          }
 
-            <span className="flex gap-1 items-center">
+            <span className="flex gap-2 items-center">
                 <span className="text-lg font-semibold text-white">{label}</span>
-                <MoveRight size={iconSize} className="text-white"/>
+                <span className="relative h-5 w-7">
+                  <Image src={'/Icons/arrow1.svg'} alt={'icon'} fill priority/>
+                </span>
               </span>
         </Button>
     );

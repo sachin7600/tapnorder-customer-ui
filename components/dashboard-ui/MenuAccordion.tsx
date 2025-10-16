@@ -18,10 +18,10 @@ import {useUser} from "@/components/context/AuthContext";
 import {useRouter, useSearchParams} from "next/navigation";
 import {toast} from "sonner";
 import CustomButton from "@/components/common-ui/CustomButton";
+import {AnimatePresence, motion} from 'motion/react';
 
-function MenuAccordion() {
+function MenuAccordion({setLocalCart,localCart,handleClearCart}) {
     const {user} = useUser();
-    const [localCart, setLocalCart] = useState<any[]>([]);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const {
         categoryMenuList,
@@ -128,34 +128,6 @@ function MenuAccordion() {
         debouncedUpdateCart(updatedCart);
     };
 
-    const handleClearCart = async () => {
-        if (!user) {
-            setDrawerOpen(true);
-            return;
-        }
-
-        try {
-            const cartPayload = {
-                cartId: cartData?.cartId || 0,
-                userId: user.id,
-                outletId: parseInt(outletId),
-                tableId: parseInt(tableId),
-                items: [],
-            };
-
-            await addMenuItemsInCart(cartPayload).unwrap();
-            setLocalCart([]); // clear locally
-            toast.success("Cart cleared successfully!", {
-                position: "top-center",
-            });
-            refetchCart();
-        } catch (error) {
-            console.error("Error clearing cart:", error);
-            toast.error("Failed to clear cart. Please try again.", {
-                position: "top-center",
-            });
-        }
-    };
     // const handleClearCartConfirm = () => {
     //     if (window.confirm("Are you sure you want to clear all items from the cart?")) {
     //         handleClearCart();
@@ -176,7 +148,7 @@ function MenuAccordion() {
     }, [categoryMenuList, foodType, searchText, selectedCategory]);
 
     return (
-        <div className={''}>
+        <div className={`${getTotalCartCount() > 0 ? "pb-20" : ""}`}>
             {
                 filteredMenuItems.length > 0 ? (
                     <>
@@ -186,14 +158,14 @@ function MenuAccordion() {
                                            defaultValue={[item.categoryId]}>
                                     <AccordionItem value={item.categoryId}>
                                         <AccordionTrigger className={'text-md'}>
-                <span className={'font-semibold flex gap-1 font-sans-serif flex-col'}>
-                  <span className={'flex gap-1'}>
-                    {item?.categoryName}
-                      <span>({item?.menuItems?.length})</span>
-                  </span>
-                  <span className={'w-full h-[1] bg-primary'}></span>
+                                            <span className={'font-semibold flex gap-1 font-sans-serif flex-col'}>
+                                              <span className={'flex gap-1'}>
+                                                {item?.categoryName}
+                                                  <span>({item?.menuItems?.length})</span>
+                                              </span>
+                                              <span className={'w-full h-[1] bg-primary'}></span>
 
-                </span>
+                                            </span>
                                         </AccordionTrigger>
                                         {
                                             item?.menuItems?.map((data: any, index: number) => {
@@ -289,7 +261,7 @@ function MenuAccordion() {
                                                                 </div>
 
                                                                 <span
-                                                                    className={'text-ring font-semibold text-[13px] w-full'}>
+                                                                    className={'text-ring font-semibold text-[12px] w-full'}>
                           <ReadMoreText text={data?.description || ''} wordLimit={10}/>
                         </span>
                                                             </div>
@@ -325,29 +297,34 @@ function MenuAccordion() {
                 )
             }
 
+          <AnimatePresence>
             {
-                getTotalCartCount() > 0 && (
-                    <div
-                        className={'h-20 fixed bottom-0 transition-all duration-700 bg-gray-200 border-t-1 border-gray-300 w-full rounded-t-2xl flex items-center justify-center pr-6'}>
-                        <div className={'flex w-full px-3 gap-2'}>
-                            <CustomButton
-                                count={getTotalCartCount()}
-                                iconSize={32}
-                                onClick={() => router.push('/mycart')}
-                            />
-
-                            <span className={'flex items-center justify-center'}>
-                        <X
-                            onClick={handleClearCart}
-                            className="bg-white rounded-full p-1 shadow-2xl text-primary cursor-pointer hover:scale-110 transition-transform"
-                            size={22}
-                        />
-
-                    </span>
-                        </div>
-                    </div>
-                )
+              getTotalCartCount() > 0 && (
+                <motion.div
+                  initial={{ y: 100, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: 100, opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className={'h-20 fixed bottom-0 transition-all duration-700 bg-gray-200 border-t-1 border-gray-300 w-full rounded-t-2xl flex items-center justify-center pr-6 z-99'}
+                >
+                  <div className={'flex w-full px-3 gap-2'}>
+                    <CustomButton
+                      count={getTotalCartCount()}
+                      iconSize={32}
+                      onClick={() => router.push(`/mycart?outletId=${outletId}&tableId=${tableId}`)}
+                    />
+                    <span className={'flex items-center justify-center'}>
+            <X
+              onClick={handleClearCart}
+              className="bg-white rounded-full p-1 shadow-2xl text-primary cursor-pointer hover:scale-110 transition-transform"
+              size={22}
+            />
+          </span>
+                  </div>
+                </motion.div>
+              )
             }
+          </AnimatePresence>
 
             <CustomerDrawer open={drawerOpen} setOpen={setDrawerOpen}/>
 
