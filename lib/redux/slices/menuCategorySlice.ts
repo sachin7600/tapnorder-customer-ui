@@ -5,7 +5,8 @@ const initialState = {
   categoryNameList: [],
   foodType: 'Both',
   selectedCategory: null,
-  searchText: ''
+  searchText: '',
+  orderNote: '',
 }
 
 const menuCategorySlice = createSlice({
@@ -34,9 +35,12 @@ const menuCategorySlice = createSlice({
     },
     setSearchText: (state, action) => {
       state.searchText = action.payload;
+    },
+    setOrderNote: (state, action) => {
+      state.orderNote = action.payload;
     }
   }
 })
 
-export const {setMenuCategoryData, setSelectedCategory, setFoodType, setCategoryNameData, setSearchText} = menuCategorySlice.actions;
+export const {setMenuCategoryData, setSelectedCategory, setFoodType, setCategoryNameData, setSearchText, setOrderNote} = menuCategorySlice.actions;
 export default menuCategorySlice.reducer;

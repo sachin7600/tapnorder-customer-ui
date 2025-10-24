@@ -8,18 +8,23 @@ import OrderSummaryCard from "@/components/mycart/OrderSummaryCard";
 import RestaurantInfoCard from "@/components/mycart/RestaurantInfoCard";
 import { motion } from "motion/react";
 import Image from "next/image";
+import {useSearchParams} from "next/navigation";
+import {useGetOrderListQuery} from "@/lib/api/CustomerApi";
+import {PastOrderCartItemCard} from "@/components/pastorder-ui/PastOrderCartItemCard";
+import {useSelector} from "react-redux";
+import {RootState} from "@/lib/redux/store";
 
 function Page() {
-    const [isLoading, setIsLoading] = useState(true);
-    const [cookingRequest, setCookingRequest] = useState('');
-
-  useEffect(() => {
-    const timerId= setTimeout(()=> {
-      setIsLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timerId);
-  }, []);
+    const [isLoading, setIsLoading] = useState(false);
+    const {orderNote} = useSelector((state: RootState) => state.menuCategory);
+    const [cookingRequest, setCookingRequest] = useState(orderNote || '' );
+    const searchParams = useSearchParams();
+    const outletId = searchParams.get("outletId");
+    const { data: orderList, isLoading: loading } = useGetOrderListQuery(
+      { outletId },
+      { skip: !outletId, refetchOnMountOrArgChange: true, },
+    );
+    const billData = orderList?.items[0];
 
     return (
         <motion.div
@@ -50,17 +55,33 @@ function Page() {
                           animate={{ y: '0%', opacity: 1 }}
                           transition={{ duration: 1, ease: "easeOut" }}
                         >
-                          <div className={'pt-16 px-2'}>
+                          <div className={'pt-16'}>
                             <RestaurantInfoCard/>
                           </div>
 
-                          <div className={'mt-4 pb-80 px-2'}>
-                            <CartSummaryCard setCookingRequest={setCookingRequest} cookingRequest={cookingRequest}/>
+                          <div className={'mt-2 pb-80 px-2 flex flex-col gap-2'}>
+                            <div className={'flex flex-col gap-2'}>
+                              <span className={'font-bold pl-1 text-gray-600'}>Current Order</span>
+                              <CartSummaryCard setCookingRequest={setCookingRequest} cookingRequest={cookingRequest}/>
+                            </div>
+
+                            {
+                              (orderList || [])?.items?.length > 0 && (
+                                <div className={'flex flex-col gap-2'}>
+                                  <span className={'font-bold pl-1 text-gray-600'}>Recent Order</span>
+                                  {
+                                    (orderList || [])?.items?.map((item) => (
+                                      <PastOrderCartItemCard data={item} key={item?.id} showBill={false}/>
+                                    ))
+                                  }
+                                </div>
+                              )
+                            }
                           </div>
 
                           <div
                             className={'fixed bottom-0 w-full'}>
-                            <OrderSummaryCard cookingRequest={cookingRequest}/>
+                            <OrderSummaryCard cookingRequest={cookingRequest} billData={billData}/>
                           </div>
                         </motion.div>
                     </>

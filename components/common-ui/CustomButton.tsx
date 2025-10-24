@@ -17,11 +17,11 @@ interface CustomButtonProps {
 
 const CustomButton: React.FC<CustomButtonProps> = ({
                                                        count = 0,
-                                                       label = "View Order",
+                                                       label = "View Cart",
                                                        onClick,
                                                        disabled = false,
                                                        classNames="",
-                                                        icon
+                                                       icon
                                                    }) => {
     return (
         <Button

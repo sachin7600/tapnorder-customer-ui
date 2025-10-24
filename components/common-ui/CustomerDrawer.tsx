@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import * as Yup from 'yup';
 import {
     Drawer,
@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/drawer"
 import {Formik, Form} from "formik";
 import {Button} from "@/components/ui/button";
-import {Phone, UserRound, X} from "lucide-react";
+import {Loader2, Phone, UserRound, X} from "lucide-react";
 import CustomInputFieldWithIcon from "@/components/common-ui/CustomInputFieldWithIcon";
 import {useUser} from "@/components/context/AuthContext";
 import Image from "next/image";
@@ -24,14 +24,22 @@ const validationSchema = Yup.object({
 
 function CustomerDrawer({open = false, setOpen}) {
     const {login} = useUser();
+    const [loading,setLoading] = useState<boolean>(false);
 
     const initialValues = {firstName: '', lastName: '', phoneNumber: ''};
 
     const onSubmit = async (values: any) => {
+      setLoading(true);
+      try {
         const result = await login(values);
         if (result.success) {
-            setOpen(false);
+          setOpen(false);
         }
+      } catch (e) {
+        console.log(e);
+      } finally {
+        setLoading(false);
+      }
     };
 
     return (
@@ -73,8 +81,14 @@ function CustomerDrawer({open = false, setOpen}) {
                             type="phone"
                             icon={<Phone size={16}/>}
                         />
-                        <Button type="submit" className="h-12 rounded-xl text-white text-lg">
-                            Submit
+                        <Button type="submit" className="h-12 rounded-xl text-white text-lg" disabled={loading}>
+                          { loading ? (
+                              <span className="animate-spin ml-2">
+                                <Loader2/>
+                              </span>
+                          ) : (
+                            <span>Submit</span>
+                          ) }
                         </Button>
                     </Form>
                 </Formik>

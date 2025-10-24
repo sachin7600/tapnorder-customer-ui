@@ -6,7 +6,7 @@ import SearchBar from "@/components/dashboard-ui/SearchBar";
 import MenuAccordion from "@/components/dashboard-ui/MenuAccordion";
 import {useAddMenuItemsInCartMutation, useGetCategoryWithMenuQuery} from "@/lib/api/MenuItemApi";
 import {useDispatch} from "react-redux";
-import {setCategoryNameData, setMenuCategoryData} from "@/lib/redux/slices/menuCategorySlice";
+import {setCategoryNameData, setMenuCategoryData, setOrderNote} from "@/lib/redux/slices/menuCategorySlice";
 import Loader from "@/components/common-ui/Loader";
 import {useSearchParams} from "next/navigation";
 import { motion } from "motion/react";
@@ -48,6 +48,7 @@ function Page() {
       };
 
       await addMenuItemsInCart(cartPayload).unwrap();
+      dispatch(setOrderNote(''));
       setLocalCart([]);
       refetchCart();
     } catch (error) {

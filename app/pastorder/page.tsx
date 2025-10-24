@@ -42,7 +42,7 @@ function Page() {
                           // animate={{ y: '0%', opacity: 1 }}
                           // transition={{ duration: 0.8, ease: "easeOut" }}
                           className={'px-2 flex flex-col gap-3'}>
-                          <div className={'mt-16 px-2'}>
+                          <div className={'mt-16'}>
                             <RestaurantInfoCard/>
                           </div>
                           {

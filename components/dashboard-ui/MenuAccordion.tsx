@@ -1,7 +1,7 @@
 'use client'
 
-import {useEffect, useState, useMemo, useCallback} from "react";
-import {debounce} from "lodash";
+import React, {useEffect, useState, useMemo, useCallback} from "react";
+import _ from "lodash";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import Image from "next/image";
 import {Button} from "@/components/ui/button";
@@ -11,7 +11,7 @@ import ReadMoreText from "@/components/common-ui/ReadMoreText";
 import {useAddMenuItemsInCartMutation} from "@/lib/api/MenuItemApi";
 import {createImageBlob} from "@/lib/createImageBlob";
 import CustomerDrawer from "@/components/common-ui/CustomerDrawer";
-import {useSelector} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "@/lib/redux/store";
 import {useGetExistingCartIdQuery} from "@/lib/api/CustomerApi";
 import {useUser} from "@/components/context/AuthContext";
@@ -19,6 +19,7 @@ import {useRouter, useSearchParams} from "next/navigation";
 import {toast} from "sonner";
 import CustomButton from "@/components/common-ui/CustomButton";
 import {AnimatePresence, motion} from 'motion/react';
+import CustomDialog from "@/components/dashboard-ui/CustomDialog";
 
 function MenuAccordion({setLocalCart,localCart,handleClearCart}) {
     const {user} = useUser();
@@ -39,6 +40,7 @@ function MenuAccordion({setLocalCart,localCart,handleClearCart}) {
     const outletId = searchParams.get("outletId");
     const tableId = searchParams.get("tableId");
     const router = useRouter();
+    const [show, setShow] = useState(false);
 
     useEffect(() => {
         if (cartData?.items) {
@@ -54,87 +56,72 @@ function MenuAccordion({setLocalCart,localCart,handleClearCart}) {
         return localCart?.reduce((total: number, item: any) => total + item.quantity, 0) || 0;
     };
 
-    const debouncedUpdateCart = useCallback(
-        debounce(async (updatedItems) => {
-            try {
-                const cartPayload = {
-                    cartId: cartData?.cartId || 0,
-                    userId: user.id,
-                    outletId: parseInt(outletId),
-                    tableId: parseInt(tableId),
-                    items: updatedItems,
-                };
+    const handleConfirmClearCart = ()=> {
+      handleClearCart();
+      setShow(false);
+    }
 
-                await addMenuItemsInCart(cartPayload).unwrap();
-                refetchCart();
-            } catch (error) {
-                console.error("Error updating cart:", error);
-            }
-        }, 500),
-        [user, outletId, tableId, cartData, addMenuItemsInCart, refetchCart]
-    );
-
-    const handleAddToCart = (itemId: number) => {
-        if (!user) {
-            setDrawerOpen(true);
-            return;
-        }
-
-        const updatedCart = [...localCart];
-        const existingItem = updatedCart.find((item) => item.itemId === itemId);
-
-        if (existingItem) {
-            existingItem.quantity += 1;
-        } else {
-            updatedCart.push({itemId, quantity: 1});
-        }
-
-        setLocalCart(updatedCart);
-        debouncedUpdateCart(updatedCart);
+  const updateCartOnServer = async (updatedItems: any[]) => {
+    const cartPayload = {
+      cartId: cartData?.cartId || 0,
+      userId: user.id,
+      outletId: parseInt(outletId),
+      tableId: parseInt(tableId),
+      items: updatedItems,
     };
 
-    const handleUpdateQuantity = (
-        itemId: number,
-        currentQuantity: number,
-        operation: 'increase' | 'decrease'
-    ) => {
-        if (!user) {
-            setDrawerOpen(true);
-            return;
-        }
+    try {
+      await addMenuItemsInCart(cartPayload).unwrap();
+      refetchCart();
+      setLocalCart(updatedItems);
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to update cart", {
+        position: "top-center",
+      });
+    }
+  };
 
-        const newQuantity = operation === 'increase' ? currentQuantity + 1 : currentQuantity - 1;
+  const handleAddToCart = (itemId: number) => {
+    if (!user) {
+      setDrawerOpen(true);
+      return;
+    }
 
-        if (newQuantity > 10) {
-            toast.error("Cannot add more then 10 quantity", {
-                position: "top-center",
-            });
-            return;
-        }
+    const updatedCart = [...localCart];
+    const existingItem = updatedCart.find((item) => item.itemId === itemId);
 
-        if (newQuantity < 0) return;
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      updatedCart.push({ itemId, quantity: 1 });
+    }
 
-        const updatedCart = localCart
-            .map((item: any) =>
-                item.itemId === itemId ? {...item, quantity: newQuantity} : item
-            )
-            .filter((item: any) => item.quantity > 0);
+    updateCartOnServer(updatedCart);
+  };
 
-        if (!localCart.some((i: any) => i.itemId === itemId) && newQuantity > 0) {
-            updatedCart.push({itemId, quantity: newQuantity});
-        }
+  const handleUpdateQuantity = (
+    itemId: number,
+    currentQuantity: number,
+    operation: 'increase' | 'decrease'
+  ) => {
+    if (!user) {
+      setDrawerOpen(true);
+      return;
+    }
 
-        setLocalCart(updatedCart);
-        debouncedUpdateCart(updatedCart);
-    };
+    const newQuantity = operation === 'increase' ? currentQuantity + 1 : currentQuantity - 1;
+    if (newQuantity < 0) return;
 
-    // const handleClearCartConfirm = () => {
-    //     if (window.confirm("Are you sure you want to clear all items from the cart?")) {
-    //         handleClearCart();
-    //     }
-    // };
+    const updatedCart = localCart
+      .map((item: any) =>
+        item.itemId === itemId ? { ...item, quantity: newQuantity } : item
+      )
+      .filter((item: any) => item.quantity > 0);
 
-    const filteredMenuItems = useMemo(() => {
+    updateCartOnServer(updatedCart);
+  };
+
+  const filteredMenuItems = useMemo(() => {
         return categoryMenuList?.map((category: any) => {
             const filteredItems = category?.menuItems?.filter(
                 (item: any) =>
@@ -174,13 +161,14 @@ function MenuAccordion({setLocalCart,localCart,handleClearCart}) {
                                                         <AccordionContent
                                                             className={'py-2 flex gap-3 border-black/20 mb-2 relative'}>
                                                             <div className="relative h-[80px] w-[90px]">
-                                                                <Image
-                                                                    src={createImageBlob(data?.image?.url)}
-                                                                    alt={"overlay image"}
-                                                                    fill
-                                                                    priority
-                                                                    className="rounded-2xl object-cover"
-                                                                />
+                                                              <Image
+                                                                src={createImageBlob(data?.image?.url)}
+                                                                alt="overlay image"
+                                                                fill
+                                                                priority
+                                                                className="rounded-2xl object-cover"
+                                                                sizes="90px"
+                                                              />
                                                             </div>
                                                             <span className={'absolute -bottom-1 w-full'}>
                                <span className={'absolute -bottom-1 w-full'}>
@@ -280,12 +268,13 @@ function MenuAccordion({setLocalCart,localCart,handleClearCart}) {
                 ) : (
                     <div className={'w-full flex flex-col justify-center items-center min-h-full'}>
                         <div className={'relative w-40 h-40'}>
-                            <Image
-                                src={'/Icons/no-match-food.svg'}
-                                alt={'no match food'}
-                                fill
-                                priority
-                            />
+                          <Image
+                            src="/Icons/no-match-food.svg"
+                            alt="no match food"
+                            fill
+                            priority
+                            sizes="160px"
+                          />
                         </div>
 
                         <div className={'flex flex-col items-center gap-2'}>
@@ -315,7 +304,7 @@ function MenuAccordion({setLocalCart,localCart,handleClearCart}) {
                     />
                     <span className={'flex items-center justify-center'}>
             <X
-              onClick={handleClearCart}
+              onClick={()=> setShow(true)}
               className="bg-white rounded-full p-1 shadow-2xl text-primary cursor-pointer hover:scale-110 transition-transform"
               size={22}
             />
@@ -326,8 +315,18 @@ function MenuAccordion({setLocalCart,localCart,handleClearCart}) {
             }
           </AnimatePresence>
 
-            <CustomerDrawer open={drawerOpen} setOpen={setDrawerOpen}/>
-
+          <CustomerDrawer open={drawerOpen} setOpen={setDrawerOpen}/>
+          {
+            show && (
+                <CustomDialog
+                  open={show}
+                  onOpenChange={()=> setShow(false)}
+                  onConfirm={handleConfirmClearCart}
+                  title={'Remove Items'}
+                  description={'Are you sure you want to remove all items?'}
+                />
+            )
+          }
         </div>
     );
 }

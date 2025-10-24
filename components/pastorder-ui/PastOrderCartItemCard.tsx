@@ -3,8 +3,9 @@ import {Button} from "@/components/ui/button";
 import {Clock1, Minus, NotebookPen, Plus} from "lucide-react";
 import Image from "next/image";
 import {createImageBlob} from "@/lib/createImageBlob";
+import OrderSummaryCard from "@/components/mycart/OrderSummaryCard";
 
-export function PastOrderCartItemCard({data}) {
+export function PastOrderCartItemCard({data, showBill = true}) {
   return (
     <div className="bg-white rounded-lg shadow-md p-4 w-full mx-auto">
       {/* Header */}
@@ -14,8 +15,8 @@ export function PastOrderCartItemCard({data}) {
         </h2>
 
         <span className={'font-semibold text-gray-600 flex items-center justify-center gap-1 text-sm'}>
-               <span>
-                 <Clock1 size={15} className={'text-gray-400 bg-primary rounded-full text-white'} />
+          <span>
+                 <Clock1 size={15} className={'bg-primary rounded-full text-white'} />
                </span>
                <span>
                  {data?.createdAt
@@ -28,7 +29,7 @@ export function PastOrderCartItemCard({data}) {
                    })
                    : ""}
                </span>
-             </span>
+        </span>
       </div>
 
       {/* Items */}
@@ -46,6 +47,7 @@ export function PastOrderCartItemCard({data}) {
                   alt={item.itemName}
                   fill
                   className="object-cover"
+                  sizes={'160px'}
                 />
               </div>
               <div className="flex flex-col gap-2 w-full">
@@ -66,20 +68,19 @@ export function PastOrderCartItemCard({data}) {
         ))}
       </div>
 
-      <div className={'h-[0.1] w-full border-ring mt-3 border-dashed border'}>
+      {/*Divider*/}
+      {
+        showBill && (
+          <div className={'h-[0.1] w-full border-ring mt-3 border-dashed border'}/>
+        )
+      }
 
-      </div>
-
-      {/* Whole order note */}
-      <div className="mt-3">
-       <div className="w-full rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary flex justify-between items-center bg-muted">
-         <span className={'text-lg font-semibold text-gray-600'}>Total Items ({data?.totalQuantity})</span>
-         <span className={'text-lg font-semibold'}>
-           <span className={'font-bold text-gray-700'}>Total Amount : </span>
-           <span>₹ {data?.totalAmount}</span>
-         </span>
-       </div>
-      </div>
+      {/* Total Amount */}
+      {
+        showBill && (
+          <OrderSummaryCard billData={data} showOrderBtn={false}/>
+        )
+      }
     </div>
   );
 }

@@ -10,6 +10,8 @@ import {useUser} from "@/components/context/AuthContext";
 import {useRouter, useSearchParams} from "next/navigation";
 import {createImageBlob} from "@/lib/createImageBlob";
 import {toast} from "sonner";
+import {setOrderNote} from "@/lib/redux/slices/menuCategorySlice";
+import {useDispatch} from "react-redux";
 
 export default function CartSummaryCard({cookingRequest, setCookingRequest}) {
   const {user} = useUser();
@@ -20,6 +22,7 @@ export default function CartSummaryCard({cookingRequest, setCookingRequest}) {
   const [postOrderPlaced] = usePostOrderPlacedMutation();
   const { data: cartData, isLoading: cartLoader, refetch: refetchCart } = useGetExistingCartIdQuery({ userId: user?.id }, { skip: !user?.id });
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const getTotalCartCount = () => {
     return cartData?.items?.reduce((total: number, item: any) => total + item.quantity, 0) || 0;
@@ -29,13 +32,6 @@ export default function CartSummaryCard({cookingRequest, setCookingRequest}) {
     const newQuantity = operation === 'increase' ? currentQuantity + 1 : currentQuantity - 1;
 
     if (newQuantity < 0) return;
-
-    if (newQuantity > 10) {
-      toast.error("Cannot add more then 10 quantity", {
-        position: "top-center",
-      });
-      return;
-    }
 
     try {
       const existingItems = cartData?.items?.map((item: any) => ({
@@ -66,9 +62,16 @@ export default function CartSummaryCard({cookingRequest, setCookingRequest}) {
       await addMenuItemsInCart(cartPayload).unwrap();
       refetchCart();
     } catch (error) {
-      console.error('Error updating cart item:', error);
+      toast.error(error?.data?.message, {
+         position: "top-center",
+      });
     }
   };
+
+  const handleNotes = (text: string) => {
+      setCookingRequest(text);
+      dispatch(setOrderNote(text));
+  }
 
     return (
         <div className="bg-white rounded-xl shadow-md p-4 w-full mx-auto pb-8">
@@ -81,7 +84,7 @@ export default function CartSummaryCard({cookingRequest, setCookingRequest}) {
             <div className="flex flex-col gap-3">
               {cartData?.items && cartData?.items.map((item, index) => (
                     <div
-                        key={item.id}
+                        key={index}
                         className="flex items-center justify-between  rounded-xl p-2 bg-muted"
                     >
                         {/* Image + Details */}
@@ -89,18 +92,25 @@ export default function CartSummaryCard({cookingRequest, setCookingRequest}) {
                             <div className="relative w-16 h-16 rounded-lg overflow-hidden border">
                                 <Image
                                     src={createImageBlob(item?.image?.url)}
-                                    alt={item.itemName}
+                                    alt={item?.itemName}
                                     fill
                                     className="object-cover"
+                                    sizes={'160px'}
+                                    priority
                                 />
                             </div>
                             <div className="flex flex-col justify-between min-h-14">
                               <span className="font-bold text-gray-800 text-md flex flex-col leading-3">
                                 <span className={'flex item-center gap-1'}>
-                                  {item.itemName}
+                                  {item?.itemName}
                                   <span className={'flex-shrink-0 pt-[2px]'}>
-                                        <Image src={item?.isVeg ? "/Icons/veg.svg" : "/Icons/nonveg.svg"}
-                                        alt={'type'} width={10} height={10} priority/>
+                                        <Image
+                                          src={item?.isVeg ? "/Icons/veg.svg" : "/Icons/nonveg.svg"}
+                                          alt={'type'}
+                                          width={10}
+                                          height={10}
+                                          priority
+                                        />
                                   </span>
                                 </span>
                                 <span className={'flex gap-1'}>
@@ -123,7 +133,7 @@ export default function CartSummaryCard({cookingRequest, setCookingRequest}) {
 
                         {/* Quantity + Note */}
                         <div className="flex flex-col items-end gap-2">
-                            <div className="flex items-center gap-2 bg-gray-100 rounded-md px-1 py-0.5 border border-primary text-primary">
+                            <div className="flex items-center gap-2 bg-gray-100 rounded-md py-0.5 border border-primary text-primary min-w-20 justify-center">
                                 <Button
                                     variant="ghost"
                                     size="sm"
@@ -168,12 +178,11 @@ export default function CartSummaryCard({cookingRequest, setCookingRequest}) {
                     htmlFor="note"
                     className="text-sm font-semibold text-gray-800 mb-1 block"
                 >
-                    Order cooking Note
+                    Order Cooking Note
                 </label>
-                <input
-                    type="text"
+                <textarea
                     value={cookingRequest}
-                    onChange={(e)=> setCookingRequest(e.target.value)}
+                    onChange={(e)=> handleNotes(e.target.value)}
                     id="note"
                     placeholder="Whole Order Cooking Note..."
                     className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
