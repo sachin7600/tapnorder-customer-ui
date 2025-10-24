@@ -70,40 +70,11 @@ export default function CartSummaryCard({cookingRequest, setCookingRequest}) {
     }
   };
 
-    const items = [
-        {
-            id: 1,
-            name: "Margarita Pizza",
-            tags: ["Spicy", "Creamy"],
-            price: 160,
-            qty: 2,
-            img: "/images/pizza.jpg",
-        },
-        {
-            id: 2,
-            name: "Paneer Chilli",
-            tags: ["Spicy"],
-            price: 130,
-            qty: 1,
-            img: "/images/paneer.jpg",
-        },
-        {
-            id: 3,
-            name: "Chicken 65",
-            tags: ["Spicy"],
-            price: 140,
-            qty: 1,
-            img: "/images/chicken.jpg",
-        },
-    ];
-  console.log({
-    cartData
-  })
     return (
         <div className="bg-white rounded-xl shadow-md p-4 w-full mx-auto pb-8">
             {/* Header */}
             <h2 className="text-lg font-bold text-gray-800 mb-3">
-                Total Item ({items.length})
+                Total Item ({cartData?.items.length})
             </h2>
 
             {/* Items */}
@@ -123,14 +94,14 @@ export default function CartSummaryCard({cookingRequest, setCookingRequest}) {
                                     className="object-cover"
                                 />
                             </div>
-                            <div className="flex flex-col justify-between">
+                            <div className="flex flex-col justify-between min-h-14">
                               <span className="font-bold text-gray-800 text-md flex flex-col leading-3">
                                 <span className={'flex item-center gap-1'}>
                                   {item.itemName}
                                   <span className={'flex-shrink-0 pt-[2px]'}>
-                                            <Image src={item?.isVeg ? "/Icons/veg.svg" : "/Icons/nonveg.svg"}
-                                                   alt={'type'} width={10} height={10} priority/>
-                                          </span>
+                                        <Image src={item?.isVeg ? "/Icons/veg.svg" : "/Icons/nonveg.svg"}
+                                        alt={'type'} width={10} height={10} priority/>
+                                  </span>
                                 </span>
                                 <span className={'flex gap-1'}>
                                   {item?.menuTags?.map((tag: any, idx: number) => {
@@ -171,9 +142,9 @@ export default function CartSummaryCard({cookingRequest, setCookingRequest}) {
                                     <Plus size={14} />
                                 </Button>
                             </div>
-                            <button className="text-[12px] flex items-center gap-1 text-primary font-semibold hover:underline border-b-1 border-dashed border-primary">
-                                <NotebookPen size={12} /> Cooking Note
-                            </button>
+                            {/*<button className="text-[12px] flex items-center gap-1 text-primary font-semibold hover:underline border-b-1 border-dashed border-primary">*/}
+                            {/*    <NotebookPen size={12} /> Cooking Note*/}
+                            {/*</button>*/}
                         </div>
                     </div>
                 ))}

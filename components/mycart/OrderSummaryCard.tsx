@@ -16,8 +16,11 @@ export default function OrderSummaryCard({cookingRequest}) {
   const searchParams = useSearchParams();
   const outletId = searchParams.get("outletId");
   const tableId = searchParams.get("tableId");
-  const [postOrderPlaced] = usePostOrderPlacedMutation();
+  const [postOrderPlaced, {isLoading: postOrderLoader}] = usePostOrderPlacedMutation();
   const { data: cartData, isLoading: cartLoader, refetch: refetchCart } = useGetExistingCartIdQuery({ userId: user?.id }, { skip: !user?.id });
+  console.log({
+    cartData
+  })
 
   const handleCartNavigate = useCallback(async () => {
     try {
@@ -75,7 +78,7 @@ export default function OrderSummaryCard({cookingRequest}) {
             </div>
 
             {/* Place Order Button */}
-            <CustomButton onClick={handleCartNavigate} label={'Place Order'} classNames={'py-6'} icon={<CookingPot/>}/>
+            <CustomButton onClick={handleCartNavigate} label={'Place Order'} classNames={'py-6'} icon={<CookingPot/>} disabled={postOrderLoader}/>
         </div>
     );
 }

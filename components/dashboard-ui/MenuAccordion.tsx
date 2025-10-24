@@ -1,7 +1,7 @@
 'use client'
 
 import {useEffect, useState, useMemo, useCallback} from "react";
-import debounce from "lodash.debounce";
+import {debounce} from "lodash";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import Image from "next/image";
 import {Button} from "@/components/ui/button";

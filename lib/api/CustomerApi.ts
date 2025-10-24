@@ -7,6 +7,7 @@ const CustomerApi = api
     addTagTypes: customerTags
   })
   .injectEndpoints({
+    overrideExisting: true,
     endpoints: (build) => ({
       getOutletImageById: build.query<any, any>({
         query: ({ outletId, tableId }) => ({
@@ -91,7 +92,6 @@ const CustomerApi = api
         providesTags: ['order_list']
       })
     }),
-    overrideExisting: false
   });
 
 export default CustomerApi;

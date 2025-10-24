@@ -9,16 +9,27 @@ import React from "react";
 
 export default function Home() {
   const router = useRouter();
-  const { data, isLoading } = useGetOutletDetailsByIdQuery({ outletId: 125, tableId: 383 });
+  const { data, isLoading, isFetching } = useGetOutletDetailsByIdQuery({ outletId: 125, tableId: 383 });
 
-  if(isLoading) {
-    return <Loader/>
+  if(isLoading || isFetching) {
+    return (
+      <div className={'w-full animate-pulse'}>
+        <Image
+          src={'/shimmer/splashscreen-shimmer.svg'}
+          alt={'shimmer'}
+          width={'100'}
+          height={'100'}
+          priority
+          className='w-full h-full'
+        />
+      </div>
+    )
   }
 
   return (
     <div className="w-full">
       <div className="relative mx-auto min-h-screen">
-        <div className="absolute inset-0 z-0 h-[40vh]">
+        <div className="absolute inset-0 z-0 h-[40vh] w-full">
           <Image
             src={createImageBlob(data?.backgroundImage?.url)}
             alt={"background image"}

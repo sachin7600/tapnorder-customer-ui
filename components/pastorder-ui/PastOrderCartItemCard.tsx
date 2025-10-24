@@ -5,37 +5,6 @@ import Image from "next/image";
 import {createImageBlob} from "@/lib/createImageBlob";
 
 export function PastOrderCartItemCard({data}) {
-  console.log({
-    data
-  })
-
-  const items = [
-    {
-      id: 1,
-      name: "Margarita Pizza",
-      tags: ["Spicy", "Creamy"],
-      price: 160,
-      qty: 2,
-      img: "/images/pizza.jpg",
-    },
-    {
-      id: 2,
-      name: "Paneer Chilli",
-      tags: ["Spicy"],
-      price: 130,
-      qty: 1,
-      img: "/images/paneer.jpg",
-    },
-    {
-      id: 3,
-      name: "Chicken 65",
-      tags: ["Spicy"],
-      price: 140,
-      qty: 1,
-      img: "/images/chicken.jpg",
-    },
-  ];
-
   return (
     <div className="bg-white rounded-lg shadow-md p-4 w-full mx-auto">
       {/* Header */}
@@ -104,8 +73,8 @@ export function PastOrderCartItemCard({data}) {
       {/* Whole order note */}
       <div className="mt-3">
        <div className="w-full rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary flex justify-between items-center bg-muted">
-         <span className={'text-md font-semibold text-gray-600'}>Total Items ({data?.totalQuantity})</span>
-         <span className={'text-md font-semibold'}>
+         <span className={'text-lg font-semibold text-gray-600'}>Total Items ({data?.totalQuantity})</span>
+         <span className={'text-lg font-semibold'}>
            <span className={'font-bold text-gray-700'}>Total Amount : </span>
            <span>₹ {data?.totalAmount}</span>
          </span>

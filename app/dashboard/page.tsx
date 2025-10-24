@@ -10,15 +10,15 @@ import {setCategoryNameData, setMenuCategoryData} from "@/lib/redux/slices/menuC
 import Loader from "@/components/common-ui/Loader";
 import {useSearchParams} from "next/navigation";
 import { motion } from "motion/react";
-import {toast} from "sonner";
 import {useGetExistingCartIdQuery} from "@/lib/api/CustomerApi";
+import Image from "next/image";
 import {useUser} from "@/components/context/AuthContext";
 
 function Page() {
   const searchParams = useSearchParams();
   const outletId = searchParams.get('outletId');
-  const {data: categoryName} = useGetCategoryWithMenuQuery({outletId});
-  const {data: categoryData, isLoading} = useGetCategoryWithMenuQuery({outletId});
+  const {data: categoryName, isLoading: categoryNameLoader} = useGetCategoryWithMenuQuery({outletId});
+  const {data: categoryData, isLoading: categoryMenuLoader} = useGetCategoryWithMenuQuery({outletId});
   const dispatch = useDispatch();
   const [addMenuItemsInCart] = useAddMenuItemsInCartMutation();
   const {user} = useUser();
@@ -58,7 +58,18 @@ function Page() {
   return (
     <div className={'bg-gray-200 min-h-[100vh]'}>
       {
-        isLoading ? <Loader/> : (
+        (categoryNameLoader || categoryNameLoader) ? (
+          <div className={'w-full animate-pulse'}>
+            <Image
+              src={'/shimmer/dashboard-shimmer.svg'}
+              alt={'shimmer'}
+              width={'100'}
+              height={'100'}
+              priority
+              className='w-full h-full'
+            />
+          </div>
+          ) : (
           <>
           <motion.div
             initial={{ y: -100, opacity: 0 }}

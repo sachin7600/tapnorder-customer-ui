@@ -85,7 +85,7 @@ function TopBar({title = '', handleClearCart}: Props) {
                                     {
                                       filter.map((item) => (
                                         <div key={item}
-                                             className={'flex items-center justify-start font-semibold border px-2'}
+                                             className={'flex items-center justify-start font-semibold px-2 border-b-1'}
                                              onClick={() => handleNavigate(item)}>
                                           <DropdownMenuItem>{item}</DropdownMenuItem>
                                         </div>
@@ -98,9 +98,8 @@ function TopBar({title = '', handleClearCart}: Props) {
                             </div>
                           </div>
 
-
                           <span className={'flex w-full justify-between gap-2'}>
-                            <span className={'flex gap-1 items-center justify-start'}>
+                            <span className={'flex gap-1 items-center justify-start pl-1'}>
                                     <span><Clock4 className="text-primary h-5 w-5 p-0.5"/></span>
                                     <p className={'font-semibold text-[15px] text-secondary-foreground'}>{data?.outlet?.openTime} - {data?.outlet?.closeTime}</p>
                             </span>
