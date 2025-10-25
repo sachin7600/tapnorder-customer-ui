@@ -20,6 +20,7 @@ import {toast} from "sonner";
 import CustomButton from "@/components/common-ui/CustomButton";
 import {AnimatePresence, motion} from 'motion/react';
 import CustomDialog from "@/components/dashboard-ui/CustomDialog";
+import NoItemPresent from "@/components/common-ui/NoItemPresent";
 
 function MenuAccordion({setLocalCart,localCart,handleClearCart}) {
     const {user} = useUser();
@@ -266,23 +267,7 @@ function MenuAccordion({setLocalCart,localCart,handleClearCart}) {
                         }
                     </>
                 ) : (
-                    <div className={'w-full flex flex-col justify-center items-center min-h-full'}>
-                        <div className={'relative w-40 h-40'}>
-                          <Image
-                            src="/Icons/no-match-food.svg"
-                            alt="no match food"
-                            fill
-                            priority
-                            sizes="160px"
-                          />
-                        </div>
-
-                        <div className={'flex flex-col items-center gap-2'}>
-                            <span className={'font-bold text-2xl font-sans'}>Nothing Matches</span>
-                            <span
-                                className={'font-sans text-primary font-semibold'}>No menu items found for your search</span>
-                        </div>
-                    </div>
+                    <NoItemPresent title={'Nothing Matches'} description={'No menu items found for your search'} />
                 )
             }
 

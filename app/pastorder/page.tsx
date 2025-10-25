@@ -9,6 +9,7 @@ import {useSearchParams} from "next/navigation";
 import {useGetOrderListQuery} from "@/lib/api/CustomerApi";
 import { motion } from "motion/react";
 import Image from "next/image";
+import NoItemPresent from "@/components/common-ui/NoItemPresent";
 
 function Page() {
     const searchParams = useSearchParams();
@@ -45,11 +46,21 @@ function Page() {
                           <div className={'mt-16'}>
                             <RestaurantInfoCard/>
                           </div>
-                          {
-                            (orderList || [])?.items?.map((item) => (
-                              <PastOrderCartItemCard data={item} key={item?.id}/>
-                            ))
-                          }
+
+                          <div>
+                            { orderList?.items?.length < 0 ? (
+                              <div>
+                                {
+                                  (orderList || [])?.items?.map((item) => (
+                                    <PastOrderCartItemCard data={item} key={item?.id}/>
+                                  ))
+                                }
+                              </div>
+                            ) : (
+                              <NoItemPresent title="No Order History" description="There are no past orders to display." />
+                            )
+                            }
+                          </div>
                         </motion.div>
                     </>
                 )
