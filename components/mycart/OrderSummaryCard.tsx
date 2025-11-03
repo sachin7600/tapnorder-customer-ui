@@ -21,6 +21,8 @@ type BillData = {
   cGst: number;
   sGst: number;
   notes: string;
+  sGstPercent: number;
+  cGstPercent: number;
 }
 
 interface OrderSummaryProps {
@@ -38,7 +40,7 @@ export default function OrderSummaryCard({cookingRequest="", billData, showOrder
   const outletId = searchParams.get("outletId");
   const tableId = searchParams.get("tableId");
   const [postOrderPlaced, {isLoading: postOrderLoader}] = usePostOrderPlacedMutation();
-  const { data: cartData, isLoading: cartLoader, refetch: refetchCart } = useGetExistingCartIdQuery({ userId: user?.id }, { skip: !user?.id });
+  const { data: cartData } = useGetExistingCartIdQuery({ userId: user?.id }, { skip: !user?.id })
   const dispatch= useDispatch();
 
   const handleCartNavigate = useCallback(async () => {
@@ -88,19 +90,19 @@ export default function OrderSummaryCard({cookingRequest="", billData, showOrder
                       className="flex flex-col gap-2 text-sm text-gray-700 text-md font-semibold">
                       <div className="flex justify-between text-lg font-semibold">
                         <span>Subtotal</span>
-                        <span className="font-medium">₹ {cartData?.subtotal + (billData?.subTotal || 0)}</span>
+                        <span className="font-medium">₹ {billData?.subTotal}</span>
                       </div>
                       <div className="flex justify-between text-gray-700">
                           <span>
-                            SGST <span className="text-[11px]">({cartData?.sGstPercent}%)</span>
+                            SGST <span className="text-[11px]">({billData?.sGstPercent}%)</span>
                           </span>
-                                <span>₹ {cartData?.sgst + (billData?.sGst || 0)}</span>
+                                <span>₹ {billData?.sGst}</span>
                               </div>
                               <div className="flex justify-between text-gray-700">
                           <span>
-                            CGST <span className="text-[11px]">({cartData?.cGstPercent}%)</span>
+                            CGST <span className="text-[11px]">({billData?.cGstPercent}%)</span>
                           </span>
-                        <span>₹ {cartData?.cgst + (billData?.cGst || 0)}</span>
+                        <span>₹ {billData?.cGst}</span>
                       </div>
                     </motion.div>
                   )
@@ -113,7 +115,7 @@ export default function OrderSummaryCard({cookingRequest="", billData, showOrder
               {/* Total */}
               <div className="flex justify-between items-center text-gray-800 bg-muted rounded-md p-1 px-2 mb-4 text-xl font-bold">
                 <span className={'text-lg'}>Total Amount</span>
-                <span className="text-lg">₹ {cartData?.totalAmount + (billData?.totalAmount || 0)}</span>
+                <span className="text-lg">₹ {billData?.totalAmount}</span>
               </div>
 
               {/* Place Order Button */}
@@ -138,13 +140,13 @@ export default function OrderSummaryCard({cookingRequest="", billData, showOrder
                 </div>
                 <div className="flex justify-between text-gray-700">
                 <span>
-                  SGST <span className="text-[11px]">({cartData?.sGstPercent}%)</span>
+                  SGST <span className="text-[11px]">({billData?.sGstPercent}%)</span>
                 </span>
                   <span>₹ {billData?.sGst || 0}</span>
                 </div>
                 <div className="flex justify-between text-gray-700">
                 <span>
-                  CGST <span className="text-[11px]">({cartData?.cGstPercent}%)</span>
+                  CGST <span className="text-[11px]">({billData?.cGstPercent}%)</span>
                 </span>
                   <span>₹ {billData?.cGst || 0}</span>
                 </div>

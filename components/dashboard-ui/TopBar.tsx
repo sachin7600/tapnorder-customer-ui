@@ -33,10 +33,6 @@ function TopBar({title = '', handleClearCart}: Props) {
     const {data, isLoading} = useGetOutletDetailsByIdQuery({outletId, tableId});
     const [show, setShow] = useState(false);
 
-  console.log({
-    data
-  })
-
     const handleNavigate = useCallback((value) => {
       if(value === 'Past order') {
         router.push(`/pastorder?outletId=${outletId}&tableId=${tableId}`)
@@ -80,7 +76,7 @@ function TopBar({title = '', handleClearCart}: Props) {
                                 <span>
                                   <MapPin className="text-primary h-5 w-5"/>
                                 </span>
-                                <p className={'font-semibold text-[15px] text-secondary-foreground line-clamp-1 tracking-wider'}>{data?.outlet?.name} - {data?.outlet?.address}</p>
+                                <p className={'font-semibold text-[15px] text-secondary-foreground line-clamp-1 tracking-wider'}>{data?.restaurantName} - {data?.outlet?.address}</p>
                               </span>
                               <div>
                                 <DropdownMenu>

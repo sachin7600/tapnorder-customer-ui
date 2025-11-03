@@ -16,12 +16,16 @@ import {useUser} from "@/components/context/AuthContext";
 import {setAuthToken} from "@/lib/apiServices";
 import {FetchBaseQueryError} from "@reduxjs/toolkit/query";
 import {RootState} from "@/lib/redux/store";
+import {Loader2} from "lucide-react";
 
 function Page() {
   const searchParams = useSearchParams();
   const {foodType, selectedCategory, searchText} = useSelector((state: RootState)=> state.menuCategory);
   const outletId = searchParams.get('outletId');
-  const {data: categoryData, isLoading: categoryMenuLoader} = useGetCategoryWithMenuQuery({ outletId, search: searchText, categoryId: selectedCategory, foodType });
+  const {data: categoryData, isLoading: categoryMenuLoader, isFetching} = useGetCategoryWithMenuQuery(
+    { outletId, search: searchText, categoryId: selectedCategory, foodType },
+    { refetchOnMountOrArgChange: true , skip: !outletId },
+  );
   const dispatch = useDispatch();
   const [addMenuItemsInCart] = useAddMenuItemsInCartMutation();
   const {user, setUser} = useUser();
@@ -33,6 +37,10 @@ function Page() {
   } = useGetExistingCartIdQuery({userId: user?.id}, {skip: !user?.id});
   const tableId = searchParams.get("tableId");
   const [localCart, setLocalCart] = useState<any[]>([]);
+
+  console.log({
+    cartData
+  })
 
   useEffect(() => {
     if (isError && error) {
@@ -47,9 +55,9 @@ function Page() {
   }, [isError, error, setUser]);
 
   useEffect(() => {
-    if (categoryData?.length > 0) {
-      dispatch(setCategoryNameData(categoryData));
-      dispatch(setMenuCategoryData(categoryData))
+    if (categoryData?.categoryList?.length > 0) {
+      dispatch(setCategoryNameData(categoryData?.categoryList));
+      dispatch(setMenuCategoryData(categoryData?.categoryWithMenuItems))
     }
   },[categoryData])
 
@@ -104,7 +112,15 @@ function Page() {
               exit={{ y: 100, opacity: 0 }}
               transition={{ duration: 0.4 }}
             >
-              <MenuAccordion handleClearCart={handleClearCart} setLocalCart={setLocalCart} localCart={localCart} />
+              {
+                isFetching ? (
+                  <div className={'flex justify-center items-center h-[50vh] animate-spin w-full'}>
+                    <Loader2 color={'teal'}/>
+                  </div>
+                  ) : (
+                  <MenuAccordion handleClearCart={handleClearCart} setLocalCart={setLocalCart} localCart={localCart} />
+                )
+              }
             </motion.div>
           </>
         )

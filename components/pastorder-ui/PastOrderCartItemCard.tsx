@@ -11,7 +11,7 @@ export function PastOrderCartItemCard({data, showBill = true}) {
       {/* Header */}
       <div className="flex justify-between item-center mb-3">
         <h2 className="text-lg font-bold text-gray-800">
-          Order #{data?.id}
+          Order #{data?.orderId || data?.id}
         </h2>
 
         <span className={'font-semibold text-gray-600 flex items-center justify-center gap-1 text-sm'}>
@@ -36,7 +36,7 @@ export function PastOrderCartItemCard({data, showBill = true}) {
       <div className="flex flex-col border rounded-lg">
         {data?.orderItems?.map((item) => (
           <div
-            key={item.id}
+            key={item.itemId}
             className={`flex items-center justify-between p-2 px-3 border-b-1 [&:nth-last-child(1)]:border-b-0`}
           >
             {/* Image + Details */}

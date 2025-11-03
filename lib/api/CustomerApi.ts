@@ -52,6 +52,18 @@ const CustomerApi = api
         },
         providesTags: ['CustomerCart']
       }),
+      getExistingCartIdNew: build.query<any, any>({
+        query: ({ userId }) => ({
+          url: `/api/Cart/get-with-recent-order/${userId}`
+        }),
+        transformResponse: (response: any) => {
+          if (response?.succeeded) {
+            return response?.data ?? [];
+          }
+          return response?.data;
+        },
+        providesTags: ['CustomerCart']
+      }),
       deleteMenuItemsInCart: build.mutation<any, any>({
         query: (cartItemId) => ({
           url: `/api/Cart/delete/${cartItemId}`,
@@ -100,6 +112,7 @@ export const {
   useGetOutletImageByIdQuery,
   useAddMenuItemsInCartMutation,
   useGetExistingCartIdQuery,
+  useGetExistingCartIdNewQuery,
   useDeleteMenuItemsInCartMutation,
   usePostOrderPlacedMutation,
   useGetOrderByIdQuery,

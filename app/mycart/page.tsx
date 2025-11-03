@@ -1,30 +1,23 @@
 'use client'
 
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import TopBar from "@/components/dashboard-ui/TopBar";
-import Loader from "@/components/common-ui/Loader";
 import CartSummaryCard from "@/components/mycart/CartSummaryCard";
 import OrderSummaryCard from "@/components/mycart/OrderSummaryCard";
 import RestaurantInfoCard from "@/components/mycart/RestaurantInfoCard";
 import { motion } from "motion/react";
 import Image from "next/image";
-import {useSearchParams} from "next/navigation";
-import {useGetOrderListQuery} from "@/lib/api/CustomerApi";
+import {useGetExistingCartIdNewQuery, useGetOrderListQuery} from "@/lib/api/CustomerApi";
 import {PastOrderCartItemCard} from "@/components/pastorder-ui/PastOrderCartItemCard";
 import {useSelector} from "react-redux";
 import {RootState} from "@/lib/redux/store";
+import {useUser} from "@/components/context/AuthContext";
 
 function Page() {
-    const [isLoading, setIsLoading] = useState(false);
     const {orderNote} = useSelector((state: RootState) => state.menuCategory);
     const [cookingRequest, setCookingRequest] = useState(orderNote || '' );
-    const searchParams = useSearchParams();
-    const outletId = searchParams.get("outletId");
-    const { data: orderList, isLoading: loading } = useGetOrderListQuery(
-      { outletId },
-      { skip: !outletId, refetchOnMountOrArgChange: true, },
-    );
-    const billData = orderList?.items[0];
+    const {user} = useUser();
+    const {data: myCartData, isLoading} = useGetExistingCartIdNewQuery({userId: user?.id});
     const [show,setShow]=useState<boolean>(false);
 
     const toggleTotalCart = ()=> {
@@ -36,7 +29,7 @@ function Page() {
           className={'bg-gray-200 min-h-[100vh]'}
         >
             {
-                isLoading ? (
+              isLoading ? (
                   <div className={'w-full animate-pulse'}>
                     <Image
                       src={'/shimmer/mycart-shimmer.svg'}
@@ -71,14 +64,10 @@ function Page() {
                             </div>
 
                             {
-                              (orderList || [])?.items?.length > 0 && (
+                              myCartData?.recentOrder?.orderItems?.length > 0 && (
                                 <div className={'flex flex-col gap-2'}>
                                   <span className={'font-bold pl-1 text-gray-600'}>Recent Order</span>
-                                  {
-                                    (orderList || [])?.items?.map((item) => (
-                                      <PastOrderCartItemCard data={item} key={item?.id} showBill={false}/>
-                                    ))
-                                  }
+                                  <PastOrderCartItemCard data={myCartData?.recentOrder} showBill={false}/>
                                 </div>
                               )
                             }
@@ -86,7 +75,7 @@ function Page() {
 
                           <div
                             className={'fixed bottom-0 w-full'}>
-                            <OrderSummaryCard cookingRequest={cookingRequest} billData={billData} toggleTotalCart={toggleTotalCart} show={show}/>
+                            <OrderSummaryCard cookingRequest={cookingRequest} billData={myCartData?.orderSummary} toggleTotalCart={toggleTotalCart} show={show}/>
                           </div>
                         </motion.div>
                     </>

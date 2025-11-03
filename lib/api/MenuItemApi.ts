@@ -69,7 +69,7 @@ const MenuItemApi = api
           if (outletId) params.outletId = outletId;
           if (search) params.Search = search;
           if (categoryId) params.CategoryId = categoryId;
-          if (foodType) params.FoodType = foodType;
+          if (foodType) params.FoodType = foodType === 'Both' ? "" : foodType;
 
           return {
             url: `/api/Menu/list/categories-with-menuItems`,

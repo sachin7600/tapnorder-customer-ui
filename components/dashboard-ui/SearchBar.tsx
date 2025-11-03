@@ -1,5 +1,5 @@
 'use client'
-import React, {ChangeEvent, useEffect, useMemo, useState} from 'react';
+import React, {ChangeEvent} from 'react';
 import {
   DropdownMenu, DropdownMenuCheckboxItem,
   DropdownMenuContent,
@@ -7,15 +7,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {Button} from "@/components/ui/button";
 import {ChevronDown, Search, Utensils} from "lucide-react";
-import {DropdownMenuCheckboxItemProps} from "@radix-ui/react-dropdown-menu";
-import {useGetCategoryWithMenuQuery} from "@/lib/api/MenuItemApi";
-import Loader from "@/components/common-ui/Loader";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "@/lib/redux/store";
 import {setFoodType, setSearchText, setSelectedCategory} from "@/lib/redux/slices/menuCategorySlice";
-
-type Checked = DropdownMenuCheckboxItemProps["checked"]
-
 const filter = ['Veg', 'NonVeg', 'Both'];
 
 function SearchBar() {
