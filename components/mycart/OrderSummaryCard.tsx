@@ -6,13 +6,32 @@ import {
   useGetExistingCartIdQuery,
   usePostOrderPlacedMutation
 } from "@/lib/api/CustomerApi";
-import {useCallback} from "react";
+import {useCallback, useState} from "react";
 import {useUser} from "@/components/context/AuthContext";
-import {CookingPot} from "lucide-react";
+import {ArrowDown, ArrowUp, ChevronDown, ChevronUp, CookingPot} from "lucide-react";
 import {setOrderNote} from "@/lib/redux/slices/menuCategorySlice";
 import {useDispatch} from "react-redux";
+import {AnimatePresence, motion} from "motion/react";
+import {number} from "yup";
 
-export default function OrderSummaryCard({cookingRequest="", billData, showOrderBtn=true}) {
+type BillData = {
+  totalAmount: number;
+  subTotal: number;
+  total: number;
+  cGst: number;
+  sGst: number;
+  notes: string;
+}
+
+interface OrderSummaryProps {
+  cookingRequest?: string;
+  billData: BillData;
+  showOrderBtn? : boolean;
+  show?: boolean;
+  toggleTotalCart?: () => void;
+}
+
+export default function OrderSummaryCard({cookingRequest="", billData, showOrderBtn=true, show, toggleTotalCart}: OrderSummaryProps) {
   const router = useRouter();
   const {user} = useUser();
   const searchParams = useSearchParams();
@@ -48,29 +67,45 @@ export default function OrderSummaryCard({cookingRequest="", billData, showOrder
           showOrderBtn ? (
             <div className="bg-white rounded-t-4xl shadow-xl p-4 w-full mx-auto">
               {/* Header */}
-              <h2 className="text-sm font-semibold text-gray-800 border-gray-200 pb-1 mb-3">
+              <h2 className="text-sm font-semibold text-gray-800 border-gray-200 pb-1 mb-3 flex justify-between">
                 <span className="border-b-1 border-primary pb-1 font-semibold text-lg">Order Summary</span>
+                <span onClick={toggleTotalCart}>
+                  {
+                    show ? <ChevronDown /> : <ChevronUp />
+                  }
+                </span>
               </h2>
 
               {/* Summary rows */}
-              <div className="flex flex-col gap-2 text-sm text-gray-700 text-md font-semibold">
-                <div className="flex justify-between text-lg font-semibold">
-                  <span>Subtotal</span>
-                  <span className="font-medium">₹ {cartData?.subtotal + (billData?.subTotal || 0)}</span>
-                </div>
-                <div className="flex justify-between text-gray-700">
-                <span>
-                  SGST <span className="text-[11px]">({cartData?.sGstPercent}%)</span>
-                </span>
-                  <span>₹ {cartData?.sgst + (billData?.sGst || 0)}</span>
-                </div>
-                <div className="flex justify-between text-gray-700">
-                <span>
-                  CGST <span className="text-[11px]">({cartData?.cGstPercent}%)</span>
-                </span>
-                  <span>₹ {cartData?.cgst + (billData?.cGst || 0)}</span>
-                </div>
-              </div>
+              <AnimatePresence>
+                {
+                  show && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      transition={{ duration: 0.25, ease: "easeInOut" }}
+                      className="flex flex-col gap-2 text-sm text-gray-700 text-md font-semibold">
+                      <div className="flex justify-between text-lg font-semibold">
+                        <span>Subtotal</span>
+                        <span className="font-medium">₹ {cartData?.subtotal + (billData?.subTotal || 0)}</span>
+                      </div>
+                      <div className="flex justify-between text-gray-700">
+                          <span>
+                            SGST <span className="text-[11px]">({cartData?.sGstPercent}%)</span>
+                          </span>
+                                <span>₹ {cartData?.sgst + (billData?.sGst || 0)}</span>
+                              </div>
+                              <div className="flex justify-between text-gray-700">
+                          <span>
+                            CGST <span className="text-[11px]">({cartData?.cGstPercent}%)</span>
+                          </span>
+                        <span>₹ {cartData?.cgst + (billData?.cGst || 0)}</span>
+                      </div>
+                    </motion.div>
+                  )
+                }
+              </AnimatePresence>
 
               {/* Divider */}
               <div className="border-t border-gray-300 my-3"></div>

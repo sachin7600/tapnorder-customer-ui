@@ -5,7 +5,7 @@ import TopBar from "@/components/dashboard-ui/TopBar";
 import SearchBar from "@/components/dashboard-ui/SearchBar";
 import MenuAccordion from "@/components/dashboard-ui/MenuAccordion";
 import {useAddMenuItemsInCartMutation, useGetCategoryWithMenuQuery} from "@/lib/api/MenuItemApi";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {setCategoryNameData, setMenuCategoryData, setOrderNote} from "@/lib/redux/slices/menuCategorySlice";
 import Loader from "@/components/common-ui/Loader";
 import {useSearchParams} from "next/navigation";
@@ -13,26 +13,42 @@ import { motion } from "motion/react";
 import {useGetExistingCartIdQuery} from "@/lib/api/CustomerApi";
 import Image from "next/image";
 import {useUser} from "@/components/context/AuthContext";
+import {setAuthToken} from "@/lib/apiServices";
+import {FetchBaseQueryError} from "@reduxjs/toolkit/query";
+import {RootState} from "@/lib/redux/store";
 
 function Page() {
   const searchParams = useSearchParams();
+  const {foodType, selectedCategory, searchText} = useSelector((state: RootState)=> state.menuCategory);
   const outletId = searchParams.get('outletId');
-  const {data: categoryName, isLoading: categoryNameLoader} = useGetCategoryWithMenuQuery({outletId});
-  const {data: categoryData, isLoading: categoryMenuLoader} = useGetCategoryWithMenuQuery({outletId});
+  const {data: categoryData, isLoading: categoryMenuLoader} = useGetCategoryWithMenuQuery({ outletId, search: searchText, categoryId: selectedCategory, foodType });
   const dispatch = useDispatch();
   const [addMenuItemsInCart] = useAddMenuItemsInCartMutation();
-  const {user} = useUser();
+  const {user, setUser} = useUser();
   const {
     data: cartData,
-    isLoading: cartLoader,
-    refetch: refetchCart
+    refetch: refetchCart,
+    error,
+    isError,
   } = useGetExistingCartIdQuery({userId: user?.id}, {skip: !user?.id});
   const tableId = searchParams.get("tableId");
   const [localCart, setLocalCart] = useState<any[]>([]);
 
   useEffect(() => {
-    if(categoryData?.length > 0) {
-      dispatch(setCategoryNameData(categoryName));
+    if (isError && error) {
+      const err = error as FetchBaseQueryError;
+
+      if (err?.status === 401) {
+        localStorage.clear();
+        setUser(null);
+        setAuthToken(null);
+      }
+    }
+  }, [isError, error, setUser]);
+
+  useEffect(() => {
+    if (categoryData?.length > 0) {
+      dispatch(setCategoryNameData(categoryData));
       dispatch(setMenuCategoryData(categoryData))
     }
   },[categoryData])
@@ -59,7 +75,7 @@ function Page() {
   return (
     <div className={'bg-gray-200 min-h-[100vh]'}>
       {
-        (categoryNameLoader || categoryNameLoader) ? (
+        categoryMenuLoader ? (
           <div className={'w-full animate-pulse'}>
             <Image
               src={'/shimmer/dashboard-shimmer.svg'}

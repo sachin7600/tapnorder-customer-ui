@@ -63,9 +63,17 @@ const MenuItemApi = api
         }
       }),
       getCategoryWithMenu: build.query<any, any>({
-        query: ({ outletId }) => {
+        query: ({ outletId, search, categoryId, foodType }) => {
+          const params: any = {};
+
+          if (outletId) params.outletId = outletId;
+          if (search) params.Search = search;
+          if (categoryId) params.CategoryId = categoryId;
+          if (foodType) params.FoodType = foodType;
+
           return {
-            url: `/api/Menu/list/categories-with-menuItems?outletId=${outletId}`
+            url: `/api/Menu/list/categories-with-menuItems`,
+            params,
           };
         },
         transformResponse: (response: GetOutletByIdApiResponse) => {
@@ -73,7 +81,7 @@ const MenuItemApi = api
             return response?.data;
           }
         },
-        providesTags: ['menu_item_list']
+        providesTags: ['menu_item_list'],
       }),
       updateMenuItemStatus: build.mutation({
         query: ({ menuItemId, isActive }) => {

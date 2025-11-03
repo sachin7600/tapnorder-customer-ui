@@ -25,6 +25,11 @@ function Page() {
       { skip: !outletId, refetchOnMountOrArgChange: true, },
     );
     const billData = orderList?.items[0];
+    const [show,setShow]=useState<boolean>(false);
+
+    const toggleTotalCart = ()=> {
+      setShow(!show);
+    }
 
     return (
         <motion.div
@@ -59,7 +64,7 @@ function Page() {
                             <RestaurantInfoCard/>
                           </div>
 
-                          <div className={'mt-2 pb-80 px-2 flex flex-col gap-2'}>
+                          <div className={`mt-2 ${show ? 'pb-80' : 'pb-54'} px-2 flex flex-col gap-2`}>
                             <div className={'flex flex-col gap-2'}>
                               <span className={'font-bold pl-1 text-gray-600'}>Current Order</span>
                               <CartSummaryCard setCookingRequest={setCookingRequest} cookingRequest={cookingRequest}/>
@@ -81,7 +86,7 @@ function Page() {
 
                           <div
                             className={'fixed bottom-0 w-full'}>
-                            <OrderSummaryCard cookingRequest={cookingRequest} billData={billData}/>
+                            <OrderSummaryCard cookingRequest={cookingRequest} billData={billData} toggleTotalCart={toggleTotalCart} show={show}/>
                           </div>
                         </motion.div>
                     </>

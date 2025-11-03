@@ -15,7 +15,7 @@ function Page() {
     const searchParams = useSearchParams();
     const outletId = searchParams.get("outletId");
 
-    const { data: orderList, isLoading: loading } = useGetOrderListQuery(
+    const { data: orderList, isLoading: loading, isFetching } = useGetOrderListQuery(
       { outletId },
       { skip: !outletId, refetchOnMountOrArgChange: true, },
     );
@@ -24,7 +24,7 @@ function Page() {
         <motion.div
           className={'bg-gray-200 min-h-[100vh]'}>
             {
-              loading ? <div className={'w-full animate-pulse'}>
+              isFetching ? <div className={'w-full animate-pulse'}>
                 <Image
                   src={'/shimmer/pastorder-shimmer.svg'}
                   alt={'shimmer'}
@@ -48,8 +48,8 @@ function Page() {
                           </div>
 
                           <div>
-                            { orderList?.items?.length < 0 ? (
-                              <div>
+                            { orderList?.items?.length > 0 ? (
+                              <div className={'flex flex-col gap-3 pb-3'}>
                                 {
                                   (orderList || [])?.items?.map((item) => (
                                     <PastOrderCartItemCard data={item} key={item?.id}/>

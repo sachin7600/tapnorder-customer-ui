@@ -70,7 +70,7 @@ export default function Home() {
               Make Your Day With Food
             </span>
 
-            <span className={'h-14 w-14 bg-teal-800 rounded-full flex justify-center items-center'} onClick={()=> router.replace('/dashboard?outletId=125&tableId=290')}>
+            <span className={'h-14 w-14 bg-teal-800 rounded-full flex justify-center items-center'} onClick={()=> router.replace('/dashboard?outletId=142&tableId=330')}>
               <ArrowRight color={'white'} size={32}/>
             </span>
           </div>

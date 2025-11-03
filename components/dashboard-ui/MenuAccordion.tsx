@@ -288,12 +288,12 @@ function MenuAccordion({setLocalCart,localCart,handleClearCart}) {
                       onClick={() => router.push(`/mycart?outletId=${outletId}&tableId=${tableId}`)}
                     />
                     <span className={'flex items-center justify-center'}>
-            <X
-              onClick={()=> setShow(true)}
-              className="bg-white rounded-full p-1 shadow-2xl text-primary cursor-pointer hover:scale-110 transition-transform"
-              size={22}
-            />
-          </span>
+                      <X
+                        onClick={()=> setShow(true)}
+                        className="bg-white rounded-full p-1 shadow-2xl text-primary cursor-pointer hover:scale-110 transition-transform"
+                        size={22}
+                      />
+                    </span>
                   </div>
                 </motion.div>
               )

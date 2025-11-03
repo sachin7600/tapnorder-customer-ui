@@ -41,20 +41,20 @@ const CustomButton: React.FC<CustomButtonProps> = ({
                     <span
                       className="text-sm font-semibold text-primary bg-white rounded-lg w-12 py-2 flex justify-center itmes-center"
                     >
-                <span>
-                    {icon}
-                </span>
-              </span>
+                      <span>
+                          {icon}
+                      </span>
+                    </span>
 
                   ) : (
                     <span
-                      className="text-sm font-semibold text-primary bg-white rounded-lg w-20 py-2 text-center flex justify-around items-center"
+                      className="text-sm font-semibold text-primary bg-white rounded w-20 py-2 text-center flex justify-around items-center"
                     >
-                <ShoppingCart size={5}/>
-                <span>
-                    {count} {count > 1 ? "Items" : "Item"}
-                </span>
-              </span>
+                      <ShoppingCart size={5}/>
+                      <span>
+                          {count} {count > 1 ? "Items" : "Item"}
+                      </span>
+                    </span>
                   )
                 }
               </>

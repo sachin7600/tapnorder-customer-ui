@@ -33,6 +33,10 @@ function TopBar({title = '', handleClearCart}: Props) {
     const {data, isLoading} = useGetOutletDetailsByIdQuery({outletId, tableId});
     const [show, setShow] = useState(false);
 
+  console.log({
+    data
+  })
+
     const handleNavigate = useCallback((value) => {
       if(value === 'Past order') {
         router.push(`/pastorder?outletId=${outletId}&tableId=${tableId}`)
@@ -58,14 +62,16 @@ function TopBar({title = '', handleClearCart}: Props) {
                     </div>
                 ) : (
                     <div className={'flex items-center h-full w-full'}>
-                        <Image
+                        <div className={'flex items-center justify-center h-17 w-20 relative'}>
+                          <Image
                             src={createImageBlob(data?.restaurantLogo?.url)}
                             alt={"overlay image"}
-                            width={60}
-                            height={60}
+                            fill
                             priority
-                            className="rounded-full shadow-md shadow-gray-300"
-                        />
+                            className="rounded-full shadow-md shadow-gray-300 absolute object-cover"
+                            fetchPriority={'high'}
+                          />
+                        </div>
 
                         <div className={'flex flex-col pl-1 w-full'}>
                           <div className={'flex flex-col pl-1 w-full'}>
@@ -74,7 +80,7 @@ function TopBar({title = '', handleClearCart}: Props) {
                                 <span>
                                   <MapPin className="text-primary h-5 w-5"/>
                                 </span>
-                                <p className={'font-semibold text-[15px] text-secondary-foreground line-clamp-1'}>{data?.outlet?.address}</p>
+                                <p className={'font-semibold text-[15px] text-secondary-foreground line-clamp-1 tracking-wider'}>{data?.outlet?.name} - {data?.outlet?.address}</p>
                               </span>
                               <div>
                                 <DropdownMenu>
@@ -101,7 +107,7 @@ function TopBar({title = '', handleClearCart}: Props) {
                           <span className={'flex w-full justify-between gap-2'}>
                             <span className={'flex gap-1 items-center justify-start pl-1'}>
                                     <span><Clock4 className="text-primary h-5 w-5 p-0.5"/></span>
-                                    <p className={'font-semibold text-[15px] text-secondary-foreground'}>{data?.outlet?.openTime} - {data?.outlet?.closeTime}</p>
+                                    <p className={'font-semibold text-[15px] text-secondary-foreground tracking-wider'}>{data?.outlet?.openTime?.slice(0,-3)} AM - {data?.outlet?.closeTime?.slice(0,-3)} PM</p>
                             </span>
                             <span
                                 className={'rounded-2xl border-1 px-2 border-primary font-semibold flex justify-center items-center py-1 gap-1 truncate mt-2'}>
