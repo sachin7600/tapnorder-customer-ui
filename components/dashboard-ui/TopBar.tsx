@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {ArrowLeft, ChevronDown, Clock4, MapPin, MoveLeft, UserRound} from "lucide-react";
 import Image from "next/image";
 import {useGetOutletDetailsByIdQuery} from "@/lib/api/MenuItemApi";
@@ -28,10 +28,20 @@ function TopBar({title = '', handleClearCart}: Props) {
     const searchParams = useSearchParams();
     const router = useRouter();
     const {logout, user} = useUser();
-    const outletId = searchParams.get("outletId");
-    const tableId = searchParams.get("tableId");
-    const {data, isLoading} = useGetOutletDetailsByIdQuery({outletId, tableId});
+    const [outletId, setOutletId] = useState<string | null>(null);
+    const [tableId, setTableId] = useState<string | null>(null);
+    const {data, isLoading} = useGetOutletDetailsByIdQuery({outletId, tableId}, {
+      skip: !tableId && !outletId
+    });
     const [show, setShow] = useState(false);
+
+    useEffect(() => {
+      const storedOutlet = localStorage.getItem('outletId');
+      const storedTable = localStorage.getItem('tableId');
+
+      setOutletId(storedOutlet ?? searchParams.get('outletId'));
+      setTableId(storedTable ?? searchParams.get('tableId'));
+    }, [searchParams]);
 
     const handleNavigate = useCallback((value) => {
       if(value === 'Past order') {

@@ -7,7 +7,6 @@ import MenuAccordion from "@/components/dashboard-ui/MenuAccordion";
 import {useAddMenuItemsInCartMutation, useGetCategoryWithMenuQuery} from "@/lib/api/MenuItemApi";
 import {useDispatch, useSelector} from "react-redux";
 import {setCategoryNameData, setMenuCategoryData, setOrderNote} from "@/lib/redux/slices/menuCategorySlice";
-import Loader from "@/components/common-ui/Loader";
 import {useSearchParams} from "next/navigation";
 import { motion } from "motion/react";
 import {useGetExistingCartIdQuery} from "@/lib/api/CustomerApi";
@@ -21,10 +20,11 @@ import {Loader2} from "lucide-react";
 function Page() {
   const searchParams = useSearchParams();
   const {foodType, selectedCategory, searchText} = useSelector((state: RootState)=> state.menuCategory);
-  const outletId = searchParams.get('outletId');
+  const [outletId, setOutletId] = useState<string | null>(null);
+  const [tableId, setTableId] = useState<string | null>(null);
   const {data: categoryData, isLoading: categoryMenuLoader, isFetching} = useGetCategoryWithMenuQuery(
     { outletId, search: searchText, categoryId: selectedCategory, foodType },
-    { refetchOnMountOrArgChange: true , skip: !outletId },
+    { refetchOnMountOrArgChange: true , skip: !outletId }
   );
   const dispatch = useDispatch();
   const [addMenuItemsInCart] = useAddMenuItemsInCartMutation();
@@ -35,12 +35,15 @@ function Page() {
     error,
     isError,
   } = useGetExistingCartIdQuery({userId: user?.id}, {skip: !user?.id});
-  const tableId = searchParams.get("tableId");
   const [localCart, setLocalCart] = useState<any[]>([]);
 
-  console.log({
-    cartData
-  })
+  useEffect(() => {
+    const storedOutlet = localStorage.getItem('outletId');
+    const storedTable = localStorage.getItem('tableId');
+
+    setOutletId(storedOutlet ?? searchParams.get('outletId'));
+    setTableId(storedTable ?? searchParams.get('tableId'));
+  }, [searchParams]);
 
   useEffect(() => {
     if (isError && error) {
@@ -62,6 +65,7 @@ function Page() {
   },[categoryData])
 
   const handleClearCart = async () => {
+    if (!outletId || !tableId) return;
     try {
       const cartPayload = {
         cartId: cartData?.cartId || 0,
